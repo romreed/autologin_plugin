@@ -1,5 +1,4 @@
 import 'dart:async';
-
 // In order to *not* need this ignore, consider extracting the "web" version
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
@@ -8,13 +7,12 @@ import 'dart:html' as html show window;
 import 'dart:html';
 import 'dart:js';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 /// A web implementation of the AutologinPlugin plugin.
 class AutologinPlugin {
-  static MethodChannel _channel;
+  static late MethodChannel _channel;
 
   static void registerWith(Registrar registrar) {
     _channel = MethodChannel(
@@ -33,8 +31,7 @@ class AutologinPlugin {
   Future<dynamic> handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'isPlatformSupported':
-        return html.window.navigator.credentials != null &&
-            context.hasProperty("PasswordCredential");
+        return html.window.navigator.credentials != null && context.hasProperty("PasswordCredential");
       case 'getLoginData':
         return await getLoginData();
       case 'saveLoginData':
@@ -47,22 +44,19 @@ class AutologinPlugin {
       default:
         throw PlatformException(
           code: 'Unimplemented',
-          details:
-              'autologin_plugin for web doesn\'t implement \'${call.method}\'',
+          details: 'autologin_plugin for web doesn\'t implement \'${call.method}\'',
         );
     }
   }
 
   static Future<List<dynamic>> getLoginData() async {
-    PasswordCredential data = await html.window.navigator.credentials?.get({
-      'password': true,
-    });
+    PasswordCredential? data = await (html.window.navigator.credentials?.get({'password': true}));
     return [data?.id, data?.password];
   }
 
   static Future<bool> saveLoginData({
-    @required username,
-    @required password,
+    required username,
+    required password,
   }) async {
     await html.window.navigator.credentials?.store(PasswordCredential({
       'id': username,
